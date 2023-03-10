@@ -1,50 +1,45 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { AppWrapp } from './App.styled';
 import Statistics from './Statistics/Statistics';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
+export const App = () => {
+const [feedback, setFeedback] = useState({
+good: 0,
+neutral: 0,
+bad: 0,
+});
 
-export class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
-  onLeaveFeedback = name => {
-    this.setState(prevState => {
-      return {
-        [name]: prevState[name] + 1,
-      };
-    });
-  };
-  countTotalFeedback = () => {
-    return this.state.good + this.state.neutral + this.state.bad;
-  };
+const onLeaveFeedback = name => {
+setFeedback(prevFeedback => ({
+...prevFeedback,
+[name]: prevFeedback[name] + 1
+}));
+};
 
-  countPositiveFeedbackPercentage = () => {
-    const totalFeeds = this.countTotalFeedback();
-    if (totalFeeds !== 0) {
-      return (Math.round((this.state.good / totalFeeds) * 100));
-    }
-    return 0; 
-  };
+const countTotalFeedback = () => {
+const { good, neutral, bad } = feedback;
+return good + neutral + bad;
+};
 
-  render() {
-    return (
-      <AppWrapp>
-        <FeedbackOptions
-          options={Object.keys(this.state)}
-          onLeaveFeedback={this.onLeaveFeedback}
-        />
+const countPositiveFeedbackPercentage = () => {
+const totalFeedback = countTotalFeedback();
+return totalFeedback === 0 ? 0 : Math.round((feedback.good / totalFeedback) * 100);
+};
 
-        <Statistics
-          good={this.state.good}
-          neutral={this.state.neutral}
-          bad={this.state.bad}
-          total={this.countTotalFeedback()}
-          positivePercentage={this.countPositiveFeedbackPercentage()}
-        />
-      </AppWrapp>
-    );
-  }
-}
+return (
+<AppWrapp>
+<FeedbackOptions
+     options={Object.keys(feedback)}
+     onLeaveFeedback={onLeaveFeedback}
+   />
+<Statistics
+     good={feedback.good}
+     neutral={feedback.neutral}
+     bad={feedback.bad}
+     total={countTotalFeedback()}
+     positivePercentage={countPositiveFeedbackPercentage()}
+   />
+</AppWrapp>
+);
+};
 
